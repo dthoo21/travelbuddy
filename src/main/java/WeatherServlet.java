@@ -1,15 +1,20 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class WeatherServlet {
 
-    private static final String weatherURL = "http://api.openweathermap.org/data/2.5/weather?q=London,uk&APPID=9db0e2fddcc9f01d3e575642dc6ab560";
+    private static final String WEATHER_API = "http://api.openweathermap.org/data/2.5/weather?";
+    private static final String API_KEY = "9db0e2fddcc9f01d3e575642dc6ab560";
+    private static final String CITY_LIST_RESOURCE = "city.list.json";
 
-    public static String getHTML(String urlToRead) throws Exception {
+    private String getWeatherJson(String weatherUrl) throws IOException {
         StringBuilder result = new StringBuilder();
-        URL url = new URL(urlToRead);
+        URL url = new URL(weatherUrl);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
         BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -21,8 +26,41 @@ public class WeatherServlet {
         return result.toString();
     }
 
-    public static void main(String[] args) throws Exception
-    {
-        System.out.println(getHTML(weatherURL));
+    private String urlBuilder(int cityId) {
+        return WEATHER_API +
+                "appid=" +
+                API_KEY +
+                "&" +
+                "id=" +
+                cityId;
+    }
+
+    private int getCityCode(String city) throws IOException {
+        InputStream is = ClassLoader.getSystemResourceAsStream(CITY_LIST_RESOURCE);
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(is, writer, "UTF-8");
+
+        String strCityList = writer.toString();
+        JSONArray cityListJsonArray = new JSONArray(strCityList);
+        int cityId = 0;
+
+        for (int i = 0; i < cityListJsonArray.length(); i++) {
+            JSONObject cityJsonObject = cityListJsonArray.getJSONObject(i);
+            String cityName = cityJsonObject.getString("name");
+
+            if (city.equalsIgnoreCase(cityName)) {
+                return cityJsonObject.getInt("id");
+            }
+        }
+
+        return cityId;
+    }
+
+    public static void main(String[] args) throws Exception {
+        WeatherServlet ws = new WeatherServlet();
+
+        int cityId = ws.getCityCode("Toronto");
+        String torontoUrl = ws.urlBuilder(cityId);
+        System.out.println(ws.getWeatherJson(torontoUrl));
     }
 }
