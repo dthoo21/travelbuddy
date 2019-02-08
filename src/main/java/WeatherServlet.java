@@ -8,8 +8,8 @@ import java.net.URL;
 
 public class WeatherServlet {
 
-    private static final String WEATHER_API = "http://api.openweathermap.org/data/2.5/weather?";
-    private static final String API_KEY = "9db0e2fddcc9f01d3e575642dc6ab560";
+    private static final String BASE_URL = "http://api.openweathermap.org/data/2.5/forecast?";
+    private static final String APP_ID = "9db0e2fddcc9f01d3e575642dc6ab560";
     private static final String CITY_LIST_RESOURCE = "city.list.json";
 
     private String getWeatherJson(String weatherUrl) throws IOException {
@@ -27,9 +27,9 @@ public class WeatherServlet {
     }
 
     private String urlBuilder(int cityId) {
-        return WEATHER_API +
+        return BASE_URL +
                 "appid=" +
-                API_KEY +
+                APP_ID +
                 "&" +
                 "id=" +
                 cityId;
