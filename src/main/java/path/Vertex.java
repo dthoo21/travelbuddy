@@ -9,8 +9,7 @@ public class Vertex {
     private boolean visited = false;
     private Map<Vertex, Edge> neighbours = new HashMap<>();
 
-    public Vertex(double weight) {
-        this.weight = weight;
+    public Vertex() {
     }
 
     public double getWeight() {
