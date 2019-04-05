@@ -1,3 +1,5 @@
+package weather;
+
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
